@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/basih
 
 # Update and upgrade the system
 sudo apt update
@@ -13,7 +13,16 @@ sudo git clone https://github.com/laravel/laravel.git
 cd laravel
 
 # Configure Apache to serve the Laravel application with the specified server name
-sudo cp .env.example .env
+# Set the server name in your Apache configuration (adjust the configuration file path as needed)
+echo "ServerName benade_server" | sudo tee /etc/apache2/conf-available/server-name.conf
+
+# Enable the new server name configuration
+sudo a2enconf server-name
+
+# Copy the Laravel .env example to the actual .env file
+sudo cp /var/www/laravel/.env.example /var/www/laravel/.env
+
+# Change ownership of the Laravel application directory to the www-data user and group
 sudo chown -R www-data:www-data /var/www/laravel
 sudo chmod -R 755 /var/www/laravel/storage
 
