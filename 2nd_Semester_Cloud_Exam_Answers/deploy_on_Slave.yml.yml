@@ -1,0 +1,14 @@
+---
+- name: Execute LAMP Stack Deployment Script
+  hosts: 192.168.56.30
+  become: yes
+  tasks:
+    - name: Copy the LAMP deployment script to the Slave node
+      copy:
+        src: /home/vagrant/Master_Deploy.sh
+        dest: /tmp/Master_Deploy.sh
+        mode: 0755
+
+    - name: Execute the LAMP deployment script on the Slave node
+      shell: /tmp/Master_Deploy.sh
+
