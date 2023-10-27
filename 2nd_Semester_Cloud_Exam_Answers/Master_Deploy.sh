@@ -1,4 +1,19 @@
-#!/bin/basih
+#!/bin/bash
+
+# Define variables
+DB_NAME="adeben_db"
+DB_USER="adeben_user"
+SERVER_NAME="benade_server"
+ENCRYPTED_PASSWORD_FILE="/home/vagrant/db_password.gpg"
+
+# Check if the encrypted password file exists
+if [ ! -f "$ENCRYPTED_PASSWORD_FILE" ]; then
+    echo "Encrypted password file not found. Please make sure db_password.gpg exists."
+    exit 1
+fi
+
+# Obtain the encrypted database password from the file
+export DB_PASS=$(gpg --decrypt "$ENCRYPTED_PASSWORD_FILE")
 
 # Update and upgrade the system
 sudo apt update
@@ -9,15 +24,15 @@ sudo apt install -y apache2 mysql-server php libapache2-mod-php php-mysql git
 
 # Clone the Laravel application from GitHub
 cd /var/www/html
-sudo git clone https://github.com/laravel/laravel.git
+sudo git clone https://github.com/laravel/laravel
 cd laravel
 
 # Configure Apache to serve the Laravel application with the specified server name
 # Set the server name in your Apache configuration (adjust the configuration file path as needed)
-echo "ServerName benade_server" | sudo tee /etc/apache2/conf-available/server-name.conf
+echo "ServerName $SERVER_NAME" | sudo tee /etc/apache2/conf-available/"$SERVER_NAME".conf
 
 # Enable the new server name configuration
-sudo a2enconf server-name
+sudo a2enconf "$SERVER_NAME"
 
 # Copy the Laravel .env example to the actual .env file
 sudo cp /var/www/laravel/.env.example /var/www/laravel/.env
@@ -29,13 +44,12 @@ sudo chmod -R 755 /var/www/laravel/storage
 # Create a MySQL configuration file to set the non-plain text password
 sudo tee /etc/mysql/conf.d/laravel.cnf > /dev/null <<EOL
 [client]
-password=654321
+password=$DB_PASS
 EOL
 
 # Secure MySQL and set the root password
 sudo mysql_secure_installation <<EOF
-
-654321
+$DB_PASS
 n
 n
 n
@@ -45,9 +59,9 @@ y
 EOF
 
 # Create the database and grant privileges
-echo "CREATE DATABASE adeben_db;" | sudo mysql -u root -p654321
-echo "GRANT ALL PRIVILEGES ON adeben_db.* TO 'adeben_user'@'localhost' IDENTIFIED BY '654321';" | sudo mysql -u root -p654321
-echo "FLUSH PRIVILEGES;" | sudo mysql -u root -p654321
+echo "CREATE DATABASE $DB_NAME;" | sudo mysql -u root -p$DB_PASS
+echo "GRANT ALL PRIVILEGES ON $DB_NAME.* TO '$DB_USER'@'localhost' IDENTIFIED BY '$DB_PASS';" | sudo mysql -u root -p$DB_PASS
+echo "FLUSH PRIVILEGES;" | sudo mysql -u root -p$DB_PASS
 
 # Enable the Apache rewrite module and restart Apache
 sudo a2enmod rewrite

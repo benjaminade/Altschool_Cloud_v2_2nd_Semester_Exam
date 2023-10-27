@@ -8,7 +8,12 @@
         src: /home/vagrant/Master_Deploy.sh
         dest: /tmp/Master_Deploy.sh
         mode: 0755
+    - name: Copy the password encrypted file to the slave node
+      copy:
+        src: /home/vagrant/db_password.gpg
+        dest: /tmp/db_password.gpg
+        mode: 0755
+
 
     - name: Execute the LAMP deployment script on the Slave node
       shell: /tmp/Master_Deploy.sh
-

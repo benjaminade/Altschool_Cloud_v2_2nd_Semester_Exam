@@ -41,28 +41,26 @@ After the playbook had been executed, i checked to see if necessary applications
 
 ![Alt text](mysql_installed_on_slave.PNG)
 
-3. Check php accessibility on Slave:
+3. Check laravel app accessibility on Slave:
 
-![Alt text](php_accessibility_slave_Exam.PNG)
+![Alt text](Laravel_accessible_on_slave.PNG)
 
-![Alt text](php_accessible_Practice.PNG)
 
+For my MYSQL configuration and Apache2 web server configuration, i created an encrypted password file using gpg and i reference the file in my script using the decrypt plugin of gpg. The filename is db_password.gpg The file is pushed unto github here.
 
 Cronjob was created to check the uptime of the Slave machine every 12am
 I created the cronjob by executing the inbuilt uptime script found in /bin/uptime and i then created a log file named uptime.log in the /var/log/ directory. S3wo the script was set to run every 12am and the output is to be stored in my uptime.log file.
 
 ![Alt text](Cronjob_uptime.PNG)
 
-In mysql configuration, i created an ansible vault to keep my password encrypted
-
-![Alt text](Ansible_vault_that_keeps_my_password.PNG)
-
 
 I also ran my bash script on Master and i checked if Apache is running:
 
 ![Alt text](Apache_running_on_Master.PNG)
 
+And also if Laravel is accessible on Master
 
+![Alt text](Laravel_accessibility_on_Master.PNG)
 
 
 
